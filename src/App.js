@@ -1,24 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { Switch, Route, useHistory } from "react-router-dom";
+import AuthPage from "./pages/AuthPage";
+import Dashboard from "./pages/Dashboard";
+import LandingPage from "./pages/LandingPage";
+import { auth } from "./firebase";
 
 function App() {
+  const history = useHistory();
+  const [user] = useAuthState(auth);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Switch>
+      <Route path="/dashboard" children={<Dashboard />} />
+      <Route path="/auth" children={<AuthPage />} />
+      <Route path="/" children={<LandingPage />} />
+    </Switch>
   );
 }
 
