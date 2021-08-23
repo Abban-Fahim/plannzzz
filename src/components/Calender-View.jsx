@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
+import { useCollection } from "react-firebase-hooks/firestore";
+import { db } from "../firebase";
+import TaskIcon from "./TaskIcon";
 
-const CalenderView = () => {
+const CalenderView = ({ user }) => {
   const [value, setValue] = useState(moment());
   const [calender, setCalender] = useState([]);
   const startDay = value.clone().startOf("month").startOf("week");
@@ -25,22 +28,25 @@ const CalenderView = () => {
     setCalender(a);
   }, [value]);
 
-  //   console.log(daysOfTheWeek);
+  const userRef = db.collection("users").doc(user.uid);
+  const [assignments, a_loading] = useCollection(
+    userRef.collection("assignments")
+  );
+  const [events, e_loading] = useCollection(userRef.collection("events"));
+  const [tasks, t_loading] = useCollection(userRef.collection("tasks"));
 
   function changeMonth(e) {
     setValue(value.clone()[e.target.name](1, "month"));
   }
 
+  function keyDownHandler(e) {
+    if (e.key === "ArrowLeft") setValue(value.clone().subtract(1, "month"));
+    if (e.key === "ArrowRight") setValue(value.clone().add(1, "month"));
+  }
+
   return (
     <>
-      <div
-        id="calender"
-        onKeyDown={(e) => {
-          if (e.key === "ArrowLeft")
-            setValue(value.clone().subtract(1, "month"));
-          if (e.key === "ArrowRight") setValue(value.clone().add(1, "month"));
-        }}
-      >
+      <div id="calender" onKeyDown={keyDownHandler}>
         <div id="calender-header">
           <button
             className="btn btn-primary"
@@ -81,7 +87,28 @@ const CalenderView = () => {
                   }`}
                   key={day.format("D")}
                 >
-                  {day.format("D")}
+                  <p>{day.format("D")}</p>
+                  {assignments &&
+                    assignments.docs.map((doc) => {
+                      let data = doc.data();
+                      if (data.assigned === day.format("YYYY-M-D")) {
+                        return <TaskIcon {...data} type="assignment" />;
+                      }
+                    })}
+                  {tasks &&
+                    tasks.docs.map((doc) => {
+                      let data = doc.data();
+                      if (data.assigned === day.format("YYYY-M-D")) {
+                        return <TaskIcon {...data} type="task" />;
+                      }
+                    })}
+                  {events &&
+                    events.docs.map((doc) => {
+                      let data = doc.data();
+                      if (data.assigned === day.format("YYYY-M-D")) {
+                        return <TaskIcon {...data} type="event" />;
+                      }
+                    })}
                 </div>
               );
             });

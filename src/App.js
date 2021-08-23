@@ -5,6 +5,7 @@ import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
 import LandingPage from "./pages/LandingPage";
 import { auth } from "./firebase";
+import CreateTask from "./pages/CreateTask";
 
 function App() {
   const history = useHistory();
@@ -12,6 +13,7 @@ function App() {
 
   return (
     <Switch>
+      <Route path="/new/:type" children={<CreateTask />} />
       <Route path="/dashboard" children={<Dashboard />} />
       <Route path="/auth" children={<AuthPage />} />
       <Route path="/" children={<LandingPage />} />

@@ -94,7 +94,9 @@
   background-color: #e6e6e6;
 }
 .react-calendar__tile--now {
-  background: $primary;
+  background: transparent;
+  border: 2px dashed $primary !important;
+  box-sizing: border-box;
 }
 .react-calendar__tile--now:enabled:hover,
 .react-calendar__tile--now:enabled:focus {
